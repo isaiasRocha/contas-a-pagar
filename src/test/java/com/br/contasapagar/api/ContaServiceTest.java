@@ -17,11 +17,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ContaServiceTest {
@@ -98,19 +104,29 @@ class ContaServiceTest {
     }
 
     @Test
-    void testFindAll() {
-        List<Conta> contaList = ContaTestSupport.getContaEntityList();
-        List<ContaResponse> contaResponseList = ContaTestSupport.getContaResponseList();
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Conta> contaPage = new PageImpl<>(contaList, pageable, contaList.size());
+    void testSearchContas() {
+        String descricao = "Conta de Luz";
+        LocalDate dataVencimento = LocalDate.of(2024, 7, 24);
+        Pageable pageable = PageRequest.of(0, 1);
 
-        when(contaRepository.findAll(pageable)).thenReturn(contaPage);
-        when(contaMapper.toResponse(any(Conta.class))).thenReturn(contaResponseList.get(0));
+        Conta conta = new Conta();
+        conta.setId(1);
+        conta.setDescricao(descricao);
+        conta.setDataVencimento(dataVencimento);
 
-        Page<ContaResponse> result = contaService.findAll(pageable);
+        ContaResponse contaResponse = new ContaResponse();
+        contaResponse.setId(1);
+        contaResponse.setDescricao(descricao);
+        contaResponse.setDataVencimento(dataVencimento);
 
-        assertNotNull(result);
-        assertEquals(contaList.size(), result.getTotalElements());
-        verify(contaRepository, times(1)).findAll(pageable);
+        Page<Conta> contaPage = new PageImpl<>(Collections.singletonList(conta));
+        when(contaRepository.searchContas(any(), any(), any())).thenReturn(contaPage);
+        when(contaMapper.toResponse(any(Conta.class))).thenReturn(contaResponse);
+
+        Page<ContaResponse> result = contaService.searchContas(descricao, dataVencimento, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(descricao, result.getContent().get(0).getDescricao());
+        assertEquals(dataVencimento, result.getContent().get(0).getDataVencimento());
     }
 }

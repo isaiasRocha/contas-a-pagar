@@ -57,10 +57,6 @@ public class ContaService {
         return contaOpt.map(contaMapper::toResponse).orElse(null);
     }
 
-    public Page<ContaResponse> findAll(Pageable pageable) {
-        return contaRepository.findAll(pageable).map(contaMapper::toResponse);
-    }
-
     public Page<ContaResponse> searchContas(String descricao, LocalDate dataVencimento, Pageable pageable) {
         return contaRepository.searchContas(descricao, dataVencimento, pageable).map(contaMapper::toResponse);
     }

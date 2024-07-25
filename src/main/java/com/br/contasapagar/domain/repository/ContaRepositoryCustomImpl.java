@@ -1,14 +1,14 @@
 package com.br.contasapagar.domain.repository;
 
 import com.br.contasapagar.domain.entity.Conta;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.util.List;
 
